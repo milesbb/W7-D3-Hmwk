@@ -12,29 +12,36 @@ const loadBooks = async () => {
     let query = document.getElementById("queryInput").value;
     document.getElementById("queryInput").value = "";
     let newBooks = [];
-    for (let i = 0; i < books.length; i++) {
-      if (books[i].title.includes[query]) {
-        newBooks.push(books[i]);
+    if (query.length > 3) {
+      for (let i = 0; i < books.length; i++) {
+        if (books[i].title.includes(query)) {
+          newBooks.push(books[i]);
+        }
       }
+      console.log("FILTERED!!");
+      console.log(newBooks);
+      const MAIN_ROW = document.querySelectorAll("#mainRow");
+      MAIN_ROW.innerHTML = "";
+      setCards(newBooks);
+    } else {
+      alert("Please type more than 3 characters");
     }
-    console.log("FILTERED!!");
-    console.log(newBooks);
-    setCards(newBooks);
-  } else {
+  } else if (isFiltered == false) {
     setCards(books);
   }
 };
 
-const filterBooks = () => {
+const filterBooks = async () => {
   isFiltered = true;
   console.log("FILTER REQUEST");
-  setCards(newBooks);
+  await loadBooks();
 };
 
 let shoppingCart = [];
 
 const setCards = (books) => {
   const MAIN_ROW = document.querySelectorAll("#mainRow");
+  MAIN_ROW.innerHTML = "";
   for (let i = 0; i < books.length; i++) {
     MAIN_ROW[0].innerHTML += `
         <div class="col-md-4">
@@ -109,13 +116,13 @@ const setCards = (books) => {
     ".btn-group > .btn:first-child"
   );
   const ADDED_BADGES = document.querySelectorAll(".badge");
-  
+
   ADD_BUTTONS.forEach((elem, i) => {
     elem.addEventListener("click", () => {
       ADDED_BADGES[i].classList.toggle("d-none");
       shoppingCart.push(books[i]);
       const LIST_CONT = document.getElementById("shopListCont");
-      LIST_CONT.innerHTML = ""
+      LIST_CONT.innerHTML = "";
       for (let v = 0; v < shoppingCart.length; v++) {
         LIST_CONT.innerHTML += `
         <li class="list-group-item d-flex justify-content-between align-items-start">
@@ -123,25 +130,39 @@ const setCards = (books) => {
                     <div class="fw-bold">${books[v].title}</div>
                     ${books[v].category}
                   </div>
-                  <span class="badge bg-primary rounded-pill">£${books[v].price.toString()}</span>
+                  <span class="badge bg-primary rounded-pill text-white">£${books[
+                    v
+                  ].price.toString()}</span>
         </li>
-        `
+        `;
       }
+      const CART_TOTAL = document.getElementById("cartItems");
+      CART_TOTAL.innerText = "Cart Items: " + shoppingCart.length.toString();
+    });
+  });
+
+  const SKIP_BUTTONS = document.querySelectorAll(
+    ".btn-group > .btn:last-child"
+  );
+  const CARDS = document.querySelectorAll(".card");
+  SKIP_BUTTONS.forEach((elem, i) => {
+    elem.addEventListener("click", () => {
+      CARDS[i].remove();
     });
   });
 };
 
 const EMPTY_BUTTON = document.getElementById("emptyCart");
 EMPTY_BUTTON.addEventListener("click", () => {
-    shoppingCart = [];
-    const LIST_CONT = document.getElementById("shopListCont");
-    LIST_CONT.innerHTML = "";
-    const ADDED_BADGES = document.querySelectorAll(".badge");
-    ADDED_BADGES.forEach((elem) => elem.classList.add("d-none"));
-})
+  shoppingCart = [];
+  const LIST_CONT = document.getElementById("shopListCont");
+  LIST_CONT.innerHTML = "";
+  const ADDED_BADGES = document.querySelectorAll(".badge");
+  ADDED_BADGES.forEach((elem) => elem.classList.add("d-none"));
+});
 
-const addToCart = () => {};
-
-loadBooks();
+window.onload = () => {
+  loadBooks();
+};
 
 console.log("Loaded");

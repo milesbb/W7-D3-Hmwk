@@ -65,7 +65,7 @@ const setCards = (books) => {
             <h5 class="card-title">${books[i].title}</h5>
             <p class="card-text">
               <p class="category">Category: ${books[i].category}</p>
-              <p class="price">Price: ${books[i].price}</p>
+              <p class="price">Price: £${books[i].price}</p>
             </p>
             <div class="btn-group">
               <button type="button" class="btn btn-sm btn-outline-secondary">

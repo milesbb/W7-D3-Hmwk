@@ -1,6 +1,6 @@
-let isFiltered = false;
+let queryInitial = "";
 
-const loadBooks = async () => {
+const loadBooks = async (query) => {
   const response = await fetch("https://striveschool-api.herokuapp.com/books", {
     method: "GET",
   });
@@ -8,9 +8,9 @@ const loadBooks = async () => {
   const books = data;
   console.log(books);
 
-  if (isFiltered) {
-    let query = document.getElementById("queryInput").value;
-    document.getElementById("queryInput").value = "";
+  if (query === "") {
+    setCards(books);   
+  } else {
     let newBooks = [];
     if (query.length > 3) {
       for (let i = 0; i < books.length; i++) {
@@ -21,20 +21,19 @@ const loadBooks = async () => {
       console.log("FILTERED!!");
       console.log(newBooks);
       const MAIN_ROW = document.querySelectorAll("#mainRow");
-      MAIN_ROW.innerHTML = "";
+      MAIN_ROW[0].innerHTML = "";
       setCards(newBooks);
     } else {
       alert("Please type more than 3 characters");
     }
-  } else if (isFiltered == false) {
-    setCards(books);
   }
 };
 
-const filterBooks = async () => {
-  isFiltered = true;
+const filterBooks = () => {
+  queryInitial = document.getElementById("queryInput").value;
+  document.getElementById("queryInput").value = "";
   console.log("FILTER REQUEST");
-  await loadBooks();
+  loadBooks(queryInitial);
 };
 
 let shoppingCart = [];
@@ -61,12 +60,12 @@ const setCards = (books) => {
               />
             </svg>
         </span>
-          <img class="card-img-top" src="..." alt="Card image cap" />
+          <img class="card-img-top" src="${books[i].img}" alt="Card image cap" />
           <div class="card-body">
-            <h5 class="card-title">Card title</h5>
+            <h5 class="card-title">${books[i].title}</h5>
             <p class="card-text">
-              <p class="category">Category: </p>
-              <p class="price">Price: </p>
+              <p class="category">Category: ${books[i].category}</p>
+              <p class="price">Price: ${books[i].price}</p>
             </p>
             <div class="btn-group">
               <button type="button" class="btn btn-sm btn-outline-secondary">
@@ -93,24 +92,6 @@ const setCards = (books) => {
       </div>
         `;
   }
-
-  const CARD_IMGS = document.querySelectorAll(".card > img");
-  const CARD_TITLES = document.querySelectorAll(".card-title");
-  const CARD_PRICES = document.querySelectorAll(".price");
-  const CARD_CATEGORY = document.querySelectorAll(".category");
-
-  CARD_IMGS.forEach((elem, i) => {
-    elem.src = books[i].img;
-  });
-  CARD_TITLES.forEach((elem, i) => {
-    elem.innerHTML = books[i].title;
-  });
-  CARD_PRICES.forEach((elem, i) => {
-    elem.innerHTML = "Price: £" + books[i].price.toString();
-  });
-  CARD_CATEGORY.forEach((elem, i) => {
-    elem.innerHTML = "Category: " + books[i].category;
-  });
 
   const ADD_BUTTONS = document.querySelectorAll(
     ".btn-group > .btn:first-child"
@@ -162,7 +143,7 @@ EMPTY_BUTTON.addEventListener("click", () => {
 });
 
 window.onload = () => {
-  loadBooks();
+  loadBooks(queryInitial);
 };
 
 console.log("Loaded");
